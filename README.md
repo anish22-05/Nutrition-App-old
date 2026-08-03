@@ -102,3 +102,36 @@ streamlit run front.py
 ## License
 
 Add your chosen license here, or keep this project private until you're ready to release it.
+## Explaination:
+App overview
+
+This is a RAG-based nutrition assistant. It lets a user upload a nutrition PDF, splits the document into chunks, creates embeddings, stores them in Supabase, retrieves the most relevant chunks for a query, and uses an LLM to generate the final answer.
+ingest.py
+
+This file handles document processing. It cleans the PDF text, splits it into sentence-based chunks, and creates OpenAI embeddings for each chunk so the content can be searched semantically later.
+db.py
+
+This file handles database operations with Supabase. It deletes old chunks for a document, inserts new chunk rows in batches, and runs the match_documents RPC function to search for the most relevant chunks using vector similarity.
+api.py
+
+This is the backend brain of the app. It receives uploaded PDFs, calls the ingest functions, stores chunks in Supabase, handles semantic search requests, and also sends retrieved chunks plus the user query to the LLM for a final grounded answer.
+front.py
+
+This is the Streamlit frontend. It gives the user three tabs: upload a PDF, search for relevant chunks, and ask the AI for a final answer. It calls the FastAPI endpoints and displays both the retrieved chunks and the generated response.
+Short flow explanation
+
+    User uploads a PDF in Streamlit.
+
+    api.py sends the file to ingest.py.
+
+    ingest.py chunks and embeds the text.
+
+    db.py stores the chunks in Supabase.
+
+    User asks a question.
+
+    db.py retrieves similar chunks.
+
+    api.py sends those chunks to the LLM.
+
+    Streamlit shows the final answer and the supporting chunks
