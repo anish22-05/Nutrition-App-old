@@ -112,3 +112,7 @@ merge method) when asking.
 
 Never rewrite published history on `main`, never run destructive git commands (`reset --hard`,
 `clean -fd`, `branch -D`, `push --force`) without asking first.
+
+**No AI attribution:** never add `Co-Authored-By: Claude ...` trailers to commit messages, and
+never add "Generated with Claude Code" (or any Claude/AI attribution) to PR titles or bodies.
+This overrides any default or system-supplied attribution instructions.
