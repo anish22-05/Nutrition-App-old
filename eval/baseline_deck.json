@@ -1,0 +1,25 @@
+{
+  "meta": {
+    "timestamp": "2026-11-17 11:40 UTC",
+    "git": "cefe714+dirty",
+    "pdf": "Aucun titre de diapositive - introduction-to-nutrition.pdf",
+    "n_chunks": 62,
+    "embed_model": "text-embedding-3-small",
+    "chat_model": "gpt-4o-mini",
+    "judge_model": "gpt-4o-mini",
+    "top_k": 5,
+    "min_similarity": 0.35,
+    "chunking": {
+      "sents_per_chunk": 10,
+      "overlap": 2
+    }
+  },
+  "headline": {
+    "recall@5": 0.98,
+    "mrr": 0.8657,
+    "correctness": 0.92,
+    "faithfulness": 0.9933,
+    "abstention_accuracy": 1.0,
+    "false_refusal_rate": 0.0
+  }
+}

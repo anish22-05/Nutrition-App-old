@@ -1,0 +1,49 @@
+name: ci
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      run_eval:
+        description: "Also run the retrieval+answer evaluation gate (spends OpenAI credits)"
+        type: boolean
+        default: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: ruff check .
+      - run: pytest -q
+        env:
+          # tests mock every network call; these only satisfy required settings
+          OPENAI_API_KEY: test
+          SUPABASE_URL: http://localhost
+          SUPABASE_SERVICE_ROLE_KEY: test
+
+  eval-gate:
+    # Manual: it costs a few cents and needs the textbook PDF, which is not committed.
+    if: github.event_name == 'workflow_dispatch' && inputs.run_eval
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Download the textbook
+        run: mkdir -p data && curl -L -o data/Human-Nutrition-2020.pdf "https://pressbooks.oer.hawaii.edu/humannutrition2/open/download?type=pdf"
+      - name: Fail the build if answer quality regressed vs eval/baseline.json
+        run: python -m eval.run --check
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          SUPABASE_URL: http://localhost
+          SUPABASE_SERVICE_ROLE_KEY: unused

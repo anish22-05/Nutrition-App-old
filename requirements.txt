@@ -1,0 +1,18 @@
+fastapi>=0.115
+uvicorn[standard]>=0.30
+python-multipart>=0.0.9
+pydantic>=2.7
+pydantic-settings>=2.3
+openai>=1.40
+supabase>=2.5
+pymupdf>=1.24
+tiktoken>=0.7
+streamlit>=1.36
+requests>=2.32
+python-dotenv>=1.0
+numpy>=1.26
+fastembed>=0.4   # ONNX cross-encoder reranker (optional feature, no torch needed)
+
+# dev
+pytest>=8.0
+ruff>=0.5

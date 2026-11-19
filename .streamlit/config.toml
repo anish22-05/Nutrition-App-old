@@ -1,0 +1,6 @@
+[server]
+# Matches the API's per-user limit (USER_MAX_UPLOAD_MB) so the uploader doesn't promise 200 MB.
+maxUploadSize = 25
+
+[theme]
+primaryColor = "#2e7d4f"

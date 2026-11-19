@@ -1,0 +1,52 @@
+# Keeps the free-tier Supabase project awake.
+#
+# Supabase pauses a free project after 7 days without activity, and a paused project makes the app
+# return "Retrieval backend error" until someone restores it by hand in the dashboard. This job runs
+# a tiny real query through the REST API twice a week, which counts as activity.
+#
+# Needs two repository secrets (Settings -> Secrets and variables -> Actions):
+#   SUPABASE_URL       https://<project-ref>.supabase.co
+#   SUPABASE_ANON_KEY  the public anon / publishable key (NOT the service-role key)
+# Optional:
+#   APP_URL            base URL of the deployed API; its /health is pinged too
+#
+# The anon key is enough: with row-level security on and no policies, the query returns [] but still
+# runs inside Postgres. If the project is already paused (or the key is wrong) the job FAILS, and
+# GitHub emails you, so a dead demo doesn't go unnoticed.
+name: keepalive
+on:
+  schedule:
+    - cron: "17 6 * * 1,4"   # Mondays and Thursdays 06:17 UTC (gap of at most 4 days < 7)
+  workflow_dispatch:          # "Run workflow" button for a manual test
+
+permissions: {}               # the job needs no access to the repository
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Query Supabase
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "::error::Set the SUPABASE_URL and SUPABASE_ANON_KEY repository secrets."
+            exit 1
+          fi
+          code=$(curl -sS -o body.txt -w '%{http_code}' --retry 3 --retry-delay 10 --max-time 30 \
+            -H "apikey: $SUPABASE_ANON_KEY" -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
+            "${SUPABASE_URL%/}/rest/v1/documents?select=doc_id&limit=1")
+          echo "Supabase answered HTTP $code"
+          if [ "$code" != "200" ]; then
+            head -c 300 body.txt; echo
+            echo "::error::Supabase did not answer 200. The project may be paused: restore it in the dashboard."
+            exit 1
+          fi
+
+      - name: Ping the API (optional)
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+        if: env.APP_URL != ''
+        run: curl -fsS --retry 3 --retry-delay 20 --max-time 60 "${APP_URL%/}/health"

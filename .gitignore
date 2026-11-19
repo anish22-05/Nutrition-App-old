@@ -1,4 +1,21 @@
 .env
 __pycache__
 .myenv
+.venv
 check_api.py
+.pytest_cache
+.ruff_cache
+
+# evaluation: cached embeddings + the bulky per-run dump (report + baseline ARE tracked)
+eval/.cache/
+eval/results/latest.json
+
+# large source PDFs (download instructions in README)
+data/*.pdf
+
+# local storage mode (VECTOR_STORE=local)
+data/local_store.pkl
+data/*.tmp-*
+
+# bulky per-experiment dumps (the .md reports are tracked)
+eval/results/retr_*.json

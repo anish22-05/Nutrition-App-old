@@ -1,0 +1,29 @@
+{
+  "meta": {
+    "timestamp": "2026-11-17 18:10 UTC",
+    "git": "cefe714+dirty",
+    "pdf": "Human-Nutrition-2020.pdf",
+    "n_chunks": 1902,
+    "embed_model": "text-embedding-3-small",
+    "chat_model": "gpt-4o-mini",
+    "judge_model": "gpt-4o-mini",
+    "top_k": 5,
+    "min_similarity": 0.35,
+    "retrieval": {
+      "mode": "vector",
+      "reranker": null
+    },
+    "chunking": {
+      "sents_per_chunk": 10,
+      "overlap": 2
+    }
+  },
+  "headline": {
+    "recall@5": 0.9646,
+    "mrr": 0.8651,
+    "correctness": 0.9513,
+    "faithfulness": 1.0,
+    "abstention_accuracy": 1.0,
+    "false_refusal_rate": 0.0
+  }
+}
